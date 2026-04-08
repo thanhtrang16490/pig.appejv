@@ -59,33 +59,35 @@ export function ProductTypeChart({ data }: ProductTypeChartProps) {
   }))
 
   return (
-    <div className="h-80">
+    <div className="h-64 md:h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          margin={{ top: 20, right: 10, left: -10, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
           <XAxis
             dataKey="name"
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 11 }}
             stroke="#6b7280"
           />
           <YAxis
             yAxisId="left"
             tickFormatter={(value) => `${value}M`}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
             stroke="#6b7280"
+            width={35}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             tickFormatter={(value) => formatNumber(value)}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
             stroke="#6b7280"
+            width={45}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend wrapperStyle={{ fontSize: '11px' }} />
           <Bar
             yAxisId="left"
             dataKey="revenueInMillions"

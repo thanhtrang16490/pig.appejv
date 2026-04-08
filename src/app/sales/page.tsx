@@ -3,13 +3,11 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { DataTable } from "@/components/ui/DataTable";
-import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { TransactionFilters } from "@/components/forms/TransactionFilters";
-import { Transaction, Farm, ProductType } from "@/lib/types/database";
-import { formatDate, formatVND, formatNumber } from "@/lib/utils/format";
+import { Farm, ProductType, Transaction } from "@/lib/types/database";
+import { SalesTransactionsClient } from "./SalesTransactionsClient";
 
 interface TransactionWithJoins extends Omit<Transaction, 'farm' | 'customer'> {
   farm: { name: string } | null;
@@ -92,28 +90,6 @@ async function getFarms(): Promise<Farm[]> {
   return data || [];
 }
 
-function getProductTypeLabel(type: ProductType): string {
-  switch (type) {
-    case "heo_thit":
-      return "Heo thịt";
-    case "heo_con":
-      return "Heo con";
-    default:
-      return type;
-  }
-}
-
-function getProductTypeBadgeVariant(type: ProductType): "default" | "success" | "warning" | "danger" {
-  switch (type) {
-    case "heo_thit":
-      return "success";
-    case "heo_con":
-      return "warning";
-    default:
-      return "default";
-  }
-}
-
 async function TransactionsTable({
   filters,
 }: {
@@ -140,65 +116,7 @@ async function TransactionsTable({
     );
   }
 
-  const columns = [
-    {
-      key: "transaction_date",
-      label: "Ngày",
-      render: (item: TransactionWithJoins) => formatDate(item.transaction_date),
-    },
-    {
-      key: "customer",
-      label: "Khách hàng",
-      render: (item: TransactionWithJoins) => item.customer?.name || "-",
-    },
-    {
-      key: "farm",
-      label: "Trại",
-      render: (item: TransactionWithJoins) => item.farm?.name || "-",
-    },
-    {
-      key: "product_type",
-      label: "Loại",
-      render: (item: TransactionWithJoins) => (
-        <Badge variant={getProductTypeBadgeVariant(item.product_type)}>
-          {getProductTypeLabel(item.product_type)}
-        </Badge>
-      ),
-    },
-    {
-      key: "quantity",
-      label: "Số lượng",
-      render: (item: TransactionWithJoins) => formatNumber(item.quantity),
-    },
-    {
-      key: "total_invoice",
-      label: "Tổng hóa đơn",
-      render: (item: TransactionWithJoins) => (
-        <span className="font-medium">{formatVND(item.total_invoice)}</span>
-      ),
-    },
-    {
-      key: "outstanding_debt",
-      label: "Công nợ",
-      render: (item: TransactionWithJoins) => (
-        <span className={item.outstanding_debt > 0 ? "text-red-600 font-medium" : "text-gray-500"}>
-          {formatVND(item.outstanding_debt)}
-        </span>
-      ),
-    },
-  ];
-
-  return (
-    <DataTable
-      columns={columns}
-      data={transactions}
-      keyExtractor={(item) => item.id}
-      onRowClick={(item) => {
-        // Navigate to detail page
-        window.location.href = `/sales/${item.id}`;
-      }}
-    />
-  );
+  return <SalesTransactionsClient transactions={transactions} />;
 }
 
 export default async function SalesPage({ searchParams }: SalesPageProps) {

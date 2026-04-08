@@ -11,7 +11,9 @@ import {
   PiggyBank, 
   Scale, 
   Wallet,
-  Calendar
+  Calendar,
+  MapPin,
+  AlertCircle
 } from "lucide-react";
 import { FarmRevenuePieChart } from "@/components/charts/FarmRevenuePieChart";
 import { DailyRevenueTrendChart } from "@/components/charts/DailyRevenueTrendChart";
@@ -104,6 +106,59 @@ function getDebtStatusColor(percentPaid: number): string {
   return "text-red-600 bg-red-50";
 }
 
+function getDebtStatusBorder(percentPaid: number): string {
+  if (percentPaid >= 80) return "border-l-4 border-green-500";
+  if (percentPaid >= 50) return "border-l-4 border-amber-500";
+  return "border-l-4 border-red-500";
+}
+
+// Mobile debt card component
+function MobileDebtCard({ customer }: { customer: CustomerSummary }) {
+  const percentPaid = customer.total_revenue > 0 
+    ? (customer.total_paid / customer.total_revenue) * 100 
+    : 0;
+  const statusClass = getDebtStatusColor(percentPaid);
+  const borderClass = getDebtStatusBorder(percentPaid);
+
+  return (
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-100 p-4 ${borderClass}`}>
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 truncate">{customer.customer_name}</h3>
+          {customer.customer_address && (
+            <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+              <MapPin className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">{customer.customer_address}</span>
+            </p>
+          )}
+        </div>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusClass} ml-2 flex-shrink-0`}>
+          {percentPaid.toFixed(0)}%
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        <div>
+          <p className="text-gray-500 text-xs mb-1">Còn nợ</p>
+          <p className="font-bold text-red-600">{formatVND(customer.outstanding_debt)}</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs mb-1">Tổng doanh thu</p>
+          <p className="font-medium text-gray-900">{formatVND(customer.total_revenue)}</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs mb-1">Đã thanh toán</p>
+          <p className="font-medium text-emerald-600">{formatVND(customer.total_paid)}</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs mb-1">Số giao dịch</p>
+          <p className="font-medium text-gray-900">{customer.transaction_count}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function ReportsPage() {
   const [farmSummary, dailySummary, debtReport, productBreakdown] = await Promise.all([
     getFarmSummary(),
@@ -183,21 +238,21 @@ export default async function ReportsPage() {
 
       {/* Section 2: Revenue by Farm */}
       <section>
-        <Card title="Doanh thu theo trại">
+        <Card title="Doanh thu theo trại" className="p-3 md:p-6">
           <FarmRevenuePieChart data={farmRevenueData} />
         </Card>
       </section>
 
       {/* Section 3: Daily Revenue Trend */}
       <section>
-        <Card title="Doanh thu theo ngày">
+        <Card title="Doanh thu theo ngày" className="p-3 md:p-6">
           <DailyRevenueTrendChart data={dailySummary} />
         </Card>
       </section>
 
       {/* Section 4: Product Analysis */}
       <section>
-        <Card title="Phân tích sản phẩm">
+        <Card title="Phân tích sản phẩm" className="p-3 md:p-6">
           <ProductTypeChart data={productTypeData} />
         </Card>
       </section>
@@ -206,53 +261,63 @@ export default async function ReportsPage() {
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Báo cáo công nợ</h2>
         {debtReport.length === 0 ? (
-          <Card>
+          <Card className="p-3 md:p-6">
             <div className="text-center py-8 text-gray-500">
               Không có công nợ nào
             </div>
           </Card>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-xl shadow-sm border border-gray-100">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Khách hàng</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Tổng doanh thu</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Đã thanh toán</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Còn nợ</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Tỷ lệ thanh toán</th>
-                </tr>
-              </thead>
-              <tbody>
-                {debtReport.map((customer) => {
-                  const percentPaid = customer.total_revenue > 0 
-                    ? (customer.total_paid / customer.total_revenue) * 100 
-                    : 0;
-                  const statusClass = getDebtStatusColor(percentPaid);
-                  
-                  return (
-                    <tr key={customer.customer_id} className="border-b border-gray-50 last:border-0">
-                      <td className="py-3 px-4 text-sm text-gray-900">{customer.customer_name}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600 text-right">
-                        {formatVND(customer.total_revenue)}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-emerald-600 text-right">
-                        {formatVND(customer.total_paid)}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-red-600 font-medium text-right">
-                        {formatVND(customer.outstanding_debt)}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
-                          {percentPaid.toFixed(1)}%
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Mobile: Card-based layout */}
+            <div className="md:hidden space-y-3">
+              {debtReport.map((customer) => (
+                <MobileDebtCard key={customer.customer_id} customer={customer} />
+              ))}
+            </div>
+
+            {/* Desktop: Table layout */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full bg-white rounded-xl shadow-sm border border-gray-100">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Khách hàng</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Tổng doanh thu</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Đã thanh toán</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Còn nợ</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Tỷ lệ thanh toán</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debtReport.map((customer) => {
+                    const percentPaid = customer.total_revenue > 0 
+                      ? (customer.total_paid / customer.total_revenue) * 100 
+                      : 0;
+                    const statusClass = getDebtStatusColor(percentPaid);
+                    
+                    return (
+                      <tr key={customer.customer_id} className="border-b border-gray-50 last:border-0">
+                        <td className="py-3 px-4 text-sm text-gray-900">{customer.customer_name}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600 text-right">
+                          {formatVND(customer.total_revenue)}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-emerald-600 text-right">
+                          {formatVND(customer.total_paid)}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-red-600 font-medium text-right">
+                          {formatVND(customer.outstanding_debt)}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
+                            {percentPaid.toFixed(1)}%
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
     </div>

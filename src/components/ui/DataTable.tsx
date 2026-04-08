@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 interface Column<T> {
   key: string;
@@ -9,19 +12,27 @@ interface Column<T> {
 interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
-  onRowClick?: (item: T) => void;
+  linkPrefix?: string;
   keyExtractor: (item: T) => string;
 }
 
 export function DataTable<T>({
   columns,
   data,
-  onRowClick,
+  linkPrefix,
   keyExtractor,
 }: DataTableProps<T>) {
+  const router = useRouter();
+
   if (data.length === 0) {
     return null;
   }
+
+  const handleRowClick = (item: T) => {
+    if (linkPrefix) {
+      router.push(`${linkPrefix}${keyExtractor(item)}`);
+    }
+  };
 
   return (
     <>
@@ -30,9 +41,9 @@ export function DataTable<T>({
         {data.map((item) => (
           <div
             key={keyExtractor(item)}
-            onClick={() => onRowClick?.(item)}
+            onClick={() => handleRowClick(item)}
             className={`bg-white rounded-xl border border-gray-100 p-4 ${
-              onRowClick ? "cursor-pointer active:scale-[0.98] transition-transform" : ""
+              linkPrefix ? "cursor-pointer active:scale-[0.98] transition-transform" : ""
             }`}
           >
             {columns.map((column, index) => (
@@ -71,9 +82,9 @@ export function DataTable<T>({
             {data.map((item) => (
               <tr
                 key={keyExtractor(item)}
-                onClick={() => onRowClick?.(item)}
+                onClick={() => handleRowClick(item)}
                 className={`${
-                  onRowClick
+                  linkPrefix
                     ? "cursor-pointer hover:bg-gray-50 transition-colors"
                     : ""
                 }`}

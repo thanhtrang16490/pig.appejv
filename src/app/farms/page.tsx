@@ -10,7 +10,7 @@ import { Plus, MapPin, Users } from "lucide-react";
 import { AddFarmModal } from "./AddFarmModal";
 
 export const metadata: Metadata = {
-  title: "Quản lý trại - Quản Lý Bán Heo",
+  title: "Quản lý trại - Pig Appejv",
   description: "Quản lý danh sách các trại heo",
 };
 

@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: FarmDetailPageProps): Promise
   const farm = await getFarm(id);
   
   return {
-    title: farm ? `${farm.name} - Quản Lý Bán Heo` : "Chi tiết trại - Quản Lý Bán Heo",
+    title: farm ? `${farm.name} - Pig Appejv` : "Chi tiết trại - Pig Appejv",
     description: "Chi tiết thông tin trại heo",
   };
 }

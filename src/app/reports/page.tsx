@@ -20,7 +20,7 @@ import { DailyRevenueTrendChart } from "@/components/charts/DailyRevenueTrendCha
 import { ProductTypeChart } from "@/components/charts/ProductTypeChart";
 
 export const metadata: Metadata = {
-  title: "Báo cáo - Quản Lý Bán Heo",
+  title: "Báo cáo - Pig Appejv",
   description: "Báo cáo tổng quan doanh thu và phân tích",
 };
 

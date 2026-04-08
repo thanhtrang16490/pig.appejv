@@ -56,7 +56,7 @@ export function Header() {
             <div className="flex items-center justify-center w-8 h-8 bg-emerald-100 rounded-lg">
               <Store className="w-5 h-5 text-emerald-600" />
             </div>
-            <span className="font-semibold text-gray-900 text-lg">Quản Lý Bán Heo</span>
+            <span className="font-semibold text-gray-900 text-lg">Pig Appejv</span>
           </div>
 
           {/* Right: Avatar + email + logout */}

@@ -69,7 +69,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
             <PiggyBank className="w-8 h-8 text-emerald-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản Lý Bán Heo</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Pig Appejv</h1>
           <p className="text-gray-500 mt-1">Đăng nhập để tiếp tục</p>
         </div>
 

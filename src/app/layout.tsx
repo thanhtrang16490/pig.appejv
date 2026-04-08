@@ -1,11 +1,31 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { BottomNav } from "@/components/layout/BottomNav";
+import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
-  title: "Quản Lý Bán Heo",
+  title: "Pig Appejv",
   description: "Ứng dụng quản lý bán heo - Pig Sales Management",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bán Heo",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/icon-192x192.png" }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#059669",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -16,11 +36,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className="h-full antialiased">
       <body className="min-h-full bg-gray-50">
-        <Header />
-        <div className="mx-auto max-w-lg lg:max-w-4xl xl:max-w-6xl min-h-full bg-white shadow-lg">
-          <main className="pt-14 pb-20 px-4 py-4">{children}</main>
-          <BottomNav />
-        </div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
